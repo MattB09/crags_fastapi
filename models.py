@@ -1,9 +1,9 @@
 import datetime
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from database import Base
 
 
 class Style(Base):
@@ -15,6 +15,7 @@ class Style(Base):
 
     crags = relationship("Crag", back_populates="style")
 
+
 class Prefecture(Base):
     __tablename__ = "prefectures"
 
@@ -22,6 +23,7 @@ class Prefecture(Base):
     name = Column(String, index=True)
 
     crags = relationship("Crag", back_populates="prefecture")
+
 
 class Crag(Base):
     __tablename__ = "crags"

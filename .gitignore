@@ -1,5 +1,7 @@
 venv/*
-__pycache__/*
-.nova/*
 venv
+__pycache__/*
+__pycache__
+.nova/*
+
 .env
