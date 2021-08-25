@@ -6,14 +6,14 @@ from sqlalchemy.orm import Session
 
 import schemas, crud
 from models import Style, Crag, Prefecture, Base
-from database import SessionLocal, engine
+from database import Session, engine
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 def get_db():
-    db = SessionLocal()
+    db = Session()
     try:
         yield db
     finally:
