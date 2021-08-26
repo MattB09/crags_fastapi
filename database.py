@@ -16,7 +16,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 if not database_exists(engine.url):
     create_database(engine.url)
 
-Session = sessionmaker(
+db_session = sessionmaker(
     autocommit=False, 
     autoflush=False, 
     bind=engine
