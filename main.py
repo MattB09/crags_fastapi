@@ -67,3 +67,21 @@ def delete_style(style_id: int, db: Session = Depends(get_db)):
 # @app.get("/items/{item_id}")
 # def read_item(item_id: int, q: Optional[str] = None):
 #     return {"item_id": item_id, "q": q}
+
+@app.post("/prefectures", response_model=schemas.Prefecture)
+def create_prefecture(prefecture: schemas.PrefectureCreate, db: Session = Depends(get_db)):
+    existing_prefecture = crud.get_prefecture_by_name(db, prefecture.name)
+    if existing_prefecture:
+        raise HTTPException(status_code=400, detail="Prefecture already exists")
+    return crud.create_prefecture(db, prefecture)
+
+@app.get("/prefectures", response_model=List[schemas.Prefecture])
+def read_prefectures(db: Session = Depends(get_db)):
+    return crud.get_prefectures(db)
+
+@app.get("/prefectures/{prefecture_id}", response_model=schemas.Prefecture)
+def read_prefecture(prefecture_id: int, db: Session = Depends(get_db)):
+    prefecture = crud.get_prefecture(db, prefecture_id)
+    if prefecture is None:
+        raise HTTPException(status_code=404, detail="Prefecture not found")
+    return prefecture

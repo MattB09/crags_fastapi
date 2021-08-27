@@ -31,3 +31,20 @@ def delete_style(db: Session, style_id: int):
     deleted_style = db.query(models.Style).get(style_id)
     db.delete(deleted_style)
     db.commit()
+
+
+def create_prefecture(db: Session, prefecture: schemas.PrefectureCreate):
+    new_pref = models.Prefecture(name=prefecture.name)
+    db.add(new_pref)
+    db.commit()
+    db.refresh(new_pref)
+    return new_pref
+
+def get_prefectures(db: Session):
+    return db.query(models.Prefecture).all()
+
+def get_prefecture(db: Session, prefecture_id: int):
+    return db.query(models.Prefecture).get(prefecture_id)
+
+def get_prefecture_by_name(db: Session, name: str):
+    return db.query(models.Prefecture).filter(models.Prefecture.name == name).first()
