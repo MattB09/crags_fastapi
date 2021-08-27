@@ -20,7 +20,15 @@ def get_db():
 
 @app.get("/")
 def index():
-    return {"hello": "world"}
+    return {"docs": "visit docs at /docs"}
+
+
+@app.post("/styles", response_model=schemas.Style)
+def create_style(style: schemas.StyleCreate, db: Session = Depends(get_db)):
+    existing_style = crud.get_style_by_name(db, style.name)
+    if existing_style:
+        raise HTTPException(status_code=400, detail="Style already exists")
+    return crud.create_style(db=db, style=style)
 
 @app.get("/styles", response_model=List[schemas.Style])
 def read_styles(db: Session = Depends(get_db)):
@@ -34,12 +42,19 @@ def read_style(style_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Style not found")
     return style
 
-@app.post("/styles", response_model=schemas.Style)
-def create_style(style: schemas.StyleCreate, db: Session = Depends(get_db)):
-    existing_style = crud.get_style_by_name(db, style.name)
-    if existing_style:
-        raise HTTPException(status_code=400, detail="Style already exists")
-    return crud.create_style(db=db, style=style)
+@app.put("/styles/{style_id}", response_model=schemas.Style)
+def update_style(style_id: int, style: schemas.StyleCreate, db: Session = Depends(get_db)):
+    # verify id is valid
+    existing_style = crud.get_style(db, style_id)
+    if existing_style is None:
+        raise HTTPException(status_code=404, detail="Style not found")
+
+    # verify style.name is not a duplicate
+    duplicate_style = crud.get_style_by_name(db, style.name)
+    if duplicate_style and duplicate_style.id != style_id:
+        raise HTTPException(status_code=400, detail=f"Style with name '{style.name}' already exists.")
+
+    return crud.update_style(db, style_id, style)
 
 @app.delete("/styles/{style_id}", status_code=204)
 def delete_style(style_id: int, db: Session = Depends(get_db)):
