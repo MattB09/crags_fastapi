@@ -1,3 +1,5 @@
+from logging import raiseExceptions
+from os import name
 from typing import Optional, List
 
 from fastapi import FastAPI, Depends, HTTPException
@@ -27,7 +29,7 @@ def index():
 def create_style(style: schemas.StyleCreate, db: Session = Depends(get_db)):
     existing_style = crud.get_style_by_name(db, style.name)
     if existing_style:
-        raise HTTPException(status_code=400, detail="Style already exists")
+        raise HTTPException(status_code=400, detail="Style already exists.")
     return crud.create_style(db=db, style=style)
 
 @app.get("/styles", response_model=List[schemas.Style])
@@ -39,7 +41,7 @@ def read_styles(db: Session = Depends(get_db)):
 def read_style(style_id: int, db: Session = Depends(get_db)):
     style = crud.get_style(db, style_id)
     if style is None:
-        raise HTTPException(status_code=404, detail="Style not found")
+        raise HTTPException(status_code=404, detail="Style not found.")
     return style
 
 @app.put("/styles/{style_id}", response_model=schemas.Style)
@@ -47,7 +49,7 @@ def update_style(style_id: int, style: schemas.StyleCreate, db: Session = Depend
     # verify id is valid
     existing_style = crud.get_style(db, style_id)
     if existing_style is None:
-        raise HTTPException(status_code=404, detail="Style not found")
+        raise HTTPException(status_code=404, detail="Style not found.")
 
     # verify style.name is not a duplicate
     duplicate_style = crud.get_style_by_name(db, style.name)
@@ -60,7 +62,7 @@ def update_style(style_id: int, style: schemas.StyleCreate, db: Session = Depend
 def delete_style(style_id: int, db: Session = Depends(get_db)):
     style = crud.get_style(db, style_id)
     if style is None:
-        raise HTTPException(status_code=404, detail="Style not found")
+        raise HTTPException(status_code=404, detail="Style not found.")
     crud.delete_style(db, style_id)
     return 204
 
@@ -72,7 +74,7 @@ def delete_style(style_id: int, db: Session = Depends(get_db)):
 def create_prefecture(prefecture: schemas.PrefectureCreate, db: Session = Depends(get_db)):
     existing_prefecture = crud.get_prefecture_by_name(db, prefecture.name)
     if existing_prefecture:
-        raise HTTPException(status_code=400, detail="Prefecture already exists")
+        raise HTTPException(status_code=400, detail="Prefecture already exists.")
     return crud.create_prefecture(db, prefecture)
 
 @app.get("/prefectures", response_model=List[schemas.Prefecture])
@@ -83,5 +85,27 @@ def read_prefectures(db: Session = Depends(get_db)):
 def read_prefecture(prefecture_id: int, db: Session = Depends(get_db)):
     prefecture = crud.get_prefecture(db, prefecture_id)
     if prefecture is None:
-        raise HTTPException(status_code=404, detail="Prefecture not found")
+        raise HTTPException(status_code=404, detail="Prefecture not found.")
     return prefecture
+
+@app.put("/prefectures/{prefecture_id}", response_model=schemas.Prefecture)
+def update_prefecture(prefecture_id: int, prefecture: schemas.PrefectureCreate, db: Session = Depends(get_db)):
+    # Verify prefecture_id is valid
+    existing_prefecture = crud.get_prefecture(db, prefecture_id)
+    if existing_prefecture is None:
+        raise HTTPException(status_code=404, detail="Prefecture not found.")
+    
+    # Verify prefecture name is not a duplicate
+    duplicate_prefecture = crud.get_prefecture_by_name(db, prefecture.name)
+    if duplicate_prefecture:
+        raise HTTPException(status_code=400, detail=f"Prefecture with name '{prefecture.name}' already exists.")
+
+    return crud.update_prefecture(db, prefecture_id, prefecture)
+
+@app.delete("/prefecture/{prefecture_id}", status_code=204)
+def delete_prefecture(prefecture_id: int, db: Session = Depends(get_db)):
+    existing_prefecture = crud.get_prefecture(db, prefecture_id)
+    if existing_prefecture is None:
+        raise HTTPException(status_code=404, detail="Prefecture not found")
+    crud.delete_prefecture(db, prefecture_id)
+    return 204

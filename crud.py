@@ -48,3 +48,15 @@ def get_prefecture(db: Session, prefecture_id: int):
 
 def get_prefecture_by_name(db: Session, name: str):
     return db.query(models.Prefecture).filter(models.Prefecture.name == name).first()
+
+def update_prefecture(db: Session, prefecture_id: int, prefecture: schemas.PrefectureCreate):
+    updated_pref = db.query(models.Prefecture).get(prefecture_id)
+    updated_pref.name = prefecture.name
+    db.commit()
+    db.refresh(updated_pref)
+    return updated_pref
+
+def delete_prefecture(db: Session, prefecture_id: int):
+    deleted_pref = db.query(models.Prefecture).get(prefecture_id)
+    db.delete(deleted_pref)
+    db.commit()
