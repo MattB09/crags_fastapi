@@ -33,7 +33,7 @@ class Crag(Base):
     description = Column(String)
     city = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     style_id = Column(Integer, ForeignKey("styles.id"))
     prefecture_id = Column(Integer, ForeignKey("prefectures.id"))

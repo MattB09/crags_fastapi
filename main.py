@@ -109,3 +109,25 @@ def delete_prefecture(prefecture_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Prefecture not found")
     crud.delete_prefecture(db, prefecture_id)
     return 204
+
+
+@app.post("/crags", response_model=schemas.Crag)
+def create_crag(crag: schemas.CragCreate, db: Session = Depends(get_db)):
+    existing_crag = crud.get_crag_by_name(db, crag.name)
+    if existing_crag:
+        raise HTTPException(status_code=400, detail=f"Crag with name '{crag.name}' already exists.")
+
+    # verify prefecture is valid
+    pref = crud.get_prefecture(db, crag.prefecture_id)
+    if pref is None:
+        raise HTTPException(status_code=400, detail="prefecture_id is invalid")
+    # verify style is valid
+    style = crud.get_style(db, crag.style_id)
+    if style is None:
+        raise HTTPException(status_code=400, detail="style_id is invalid")
+
+    return crud.create_crag(db, crag)
+
+@app.get('/crags', response_model=List[schemas.Crag])
+def read_crags(db: Session = Depends(get_db)):
+    return crud.get_crags(db)

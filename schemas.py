@@ -8,8 +8,8 @@ class CragBase(BaseModel):
     name: str
     city: Optional[str] = None
     description: Optional[str] = None
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
     style_id: int
     prefecture_id: int
 
@@ -18,6 +18,8 @@ class CragCreate(CragBase):
 
 class Crag(CragBase):
     id: int
+    style_name: str
+    prefecture_name: str
 
     class Config:
         orm_mode = True
