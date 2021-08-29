@@ -120,14 +120,21 @@ def create_crag(crag: schemas.CragCreate, db: Session = Depends(get_db)):
     # verify prefecture is valid
     pref = crud.get_prefecture(db, crag.prefecture_id)
     if pref is None:
-        raise HTTPException(status_code=400, detail="prefecture_id is invalid")
+        raise HTTPException(status_code=400, detail="prefecture_id is invalid.")
     # verify style is valid
     style = crud.get_style(db, crag.style_id)
     if style is None:
-        raise HTTPException(status_code=400, detail="style_id is invalid")
+        raise HTTPException(status_code=400, detail="style_id is invalid.")
 
     return crud.create_crag(db, crag)
 
 @app.get('/crags', response_model=List[schemas.Crag])
 def read_crags(db: Session = Depends(get_db)):
     return crud.get_crags(db)
+
+@app.get('/crags/{crag_id}', response_model=schemas.Crag)
+def read_crag(crag_id: int, db: Session = Depends(get_db)):
+    crag = crud.get_crag(db, crag_id)
+    if crag is None:
+        raise HTTPException(status_code=404, detail="Crag not found.")
+    return crag

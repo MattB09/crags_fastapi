@@ -87,7 +87,22 @@ def get_crags(db: Session):
     return db.execute(query).all()
 
 def get_crag(db: Session, crag_id: int):
-    pass
+    query = select(
+        models.Crag.id, 
+        models.Crag.name, 
+        models.Crag.city, 
+        models.Crag.description, 
+        models.Crag.created_at, 
+        models.Crag.updated_at, 
+        models.Crag.style_id,
+        (models.Style.name).label("style_name"),
+        models.Crag.prefecture_id, 
+        (models.Prefecture.name).label("prefecture_name"),
+    )\
+        .where(models.Crag.prefecture_id == models.Prefecture.id)\
+        .where(models.Crag.style_id == models.Style.id)\
+        .where(models.Crag.id == crag_id)
+    return db.execute(query).first()
 
 def get_crag_by_name(db: Session, name: str):
     return db.query(models.Crag).filter(models.Crag.name == name).first()
