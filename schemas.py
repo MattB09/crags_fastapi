@@ -16,6 +16,12 @@ class CragBase(BaseModel):
 class CragCreate(CragBase):
     pass
 
+class CragOnly(CragBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
 class Crag(CragBase):
     id: int
     style_name: str
@@ -34,7 +40,7 @@ class StyleCreate(StyleBase):
 
 class Style(StyleBase):
     id: int
-    crags: List[Crag] = []
+    crags: List[CragOnly] = []
 
     class Config:
         orm_mode = True
@@ -48,7 +54,7 @@ class PrefectureCreate(PrefectureBase):
 
 class Prefecture(PrefectureBase):
     id: int
-    crags: List[Crag] = []
+    crags: List[CragOnly] = []
 
     class Config:
         orm_mode = True
