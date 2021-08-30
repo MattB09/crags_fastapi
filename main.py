@@ -1,5 +1,5 @@
 from logging import raiseExceptions
-from os import name, stat
+from os import dup, name, stat
 from typing import Optional, List
 
 from fastapi import FastAPI, Depends, HTTPException
@@ -138,6 +138,20 @@ def read_crag(crag_id: int, db: Session = Depends(get_db)):
     if crag is None:
         raise HTTPException(status_code=404, detail="Crag not found.")
     return crag
+
+@app.put("/crags/{crag_id}", response_model=schemas.Crag)
+def update_crag(crag_id: int, crag: schemas.CragCreate, db: Session = Depends(get_db)):
+    # verify crag_id is valid
+    existing_crag = crud.get_crag(db, crag_id)
+    if existing_crag is None:
+        raise HTTPException(status_code=404, detail="Crag not found.")
+
+    # verify updated crag is not a duplicate
+    duplicate = crud.get_crag_by_name(db, crag.name)
+    if duplicate:
+        raise HTTPException(status_code=400, detail=f"Crag with name '{crag.name}' already exists.")
+
+    return crud.update_crag(db, crag_id, crag)
 
 @app.delete("/crags/{crag_id}", status_code=204)
 def delete_crag(crag_id: int, db: Session = Depends(get_db)):

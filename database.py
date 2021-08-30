@@ -19,7 +19,8 @@ if not database_exists(engine.url):
 db_session = sessionmaker(
     autocommit=False, 
     autoflush=False, 
-    bind=engine
+    bind=engine,
+    future=True
 )
 
 Base = declarative_base()

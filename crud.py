@@ -108,10 +108,16 @@ def get_crag_by_name(db: Session, name: str):
     return db.query(Crag).filter(Crag.name == name).first()
 
 def update_crag(db: Session, crag_id: int, crag: schemas.CragCreate):
-    pass
+    updated_crag = db.query(Crag).get(crag_id)
+    updated_crag.name = crag.name
+    updated_crag.city = crag.city
+    updated_crag.description = crag.description
+    updated_crag.style_id = crag.style_id
+    updated_crag.prefecture_id = crag.prefecture_id
+    db.commit()
+    return get_crag(db, crag_id)
 
 def delete_crag(db: Session, crag_id: int):
     deleted_crag = db.query(Crag).get(crag_id)
     db.delete(deleted_crag)
     db.commit()
-    
